@@ -17,23 +17,22 @@ using System.Collections.Generic;
 
 public class HexGrid
 {
-    private int width;
-    private int height;
+    public int width;
+    public int height;
     public GridCell[,] grid;
 
-    public HexGrid(int width, int height)
+    public HexGrid(int height, int width)
     {
         this.width = width;
         this.height = height;   
-        grid = new GridCell[width, height];
+        grid = new GridCell[height,width];
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
             {
-                grid[i, j] = new GridCell();
+                grid[i,j] = new GridCell();
                 grid[i, j].row = i;
-                grid[i, j].column = j;                
-                grid[i, j].value = Convert.ToInt32(Console.ReadLine());
+                grid[i, j].column = j;
             }
         }
     }
@@ -72,10 +71,10 @@ public class HexGrid
             case 2: //справа снизу
                 if (col % 2 == 0)
                     if (row == height -1 || col == width - 1) return null;
-                    else return grid[row, col + 1];
+                    else return grid[row+1, col + 1];
                 else
                     if (col == width - 1) return null;
-                    else return grid[row - 1, col + 1];
+                    else return grid[row, col + 1];
 
             case 3: //снизу
                 if (row == height - 1)
@@ -92,7 +91,7 @@ public class HexGrid
             case 5: //слева сверху
                 if (col % 2 == 0)
                     if (col == 0) return null;
-                    else return grid[row, col + 1];
+                    else return grid[row, col - 1];
                 else
                     if (row == 0 || col == 0) return null;
                     else return grid[row - 1, col - 1];

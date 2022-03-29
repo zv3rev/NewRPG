@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\GitRepos\\test\\test.csproj",
+      "projectUniqueName": "D:\\GitRepos\\NewRPG\\test\\test.csproj",
       "projectName": "test",
-      "projectPath": "D:\\GitRepos\\test\\test.csproj",
+      "projectPath": "D:\\GitRepos\\NewRPG\\test\\test.csproj",
       "packagesPath": "C:\\Users\\zv3re\\.nuget\\packages\\",
-      "outputPath": "D:\\GitRepos\\test\\obj\\",
+      "outputPath": "D:\\GitRepos\\NewRPG\\test\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\zv3re\\AppData\\Roaming\\NuGet\\NuGet.Config",
