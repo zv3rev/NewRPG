@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9154569631594905395}
   - component: {fileID: 6407127601220316712}
-  - component: {fileID: 9149874192562043282}
-  - component: {fileID: 5586664935779334987}
+  - component: {fileID: 6764754832362892227}
+  - component: {fileID: 5795843148398877196}
   m_Layer: 0
   m_Name: cell
   m_TagString: Untagged
@@ -54,7 +54,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -86,21 +86,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &9149874192562043282
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7408847323198880962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aaa30e1b32b3fbf4588f36471b24324a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  standartColor: {r: 1, g: 1, b: 1, a: 0}
-  hoverColor: {r: 0.13932894, g: 0.9528302, b: 0.47146592, a: 0}
---- !u!60 &5586664935779334987
+--- !u!60 &6764754832362892227
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,3 +117,17 @@ PolygonCollider2D:
       - {x: 0.25, y: -0.43359375}
       - {x: 0.5, y: 0}
       - {x: 0.25, y: 0.43359375}
+--- !u!114 &5795843148398877196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7408847323198880962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaa30e1b32b3fbf4588f36471b24324a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  standartColor: {r: 1, g: 1, b: 1, a: 1}
+  hoverColor: {r: 0.16509432, g: 1, b: 0.18078518, a: 1}

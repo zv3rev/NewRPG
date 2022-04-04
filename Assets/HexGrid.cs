@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 
 //Класс вертикальной (с плоским верхом) гексогональной сетки с  четным смещением (ячейки с четным столбцом смещены вниз)
@@ -17,10 +18,10 @@ using System;
  
 */
 
-public class HexGrid
+public class HexGrid: MonoBehaviour
 {
-    public int width;
-    public int height;
+    private int width;
+    private int height;
     private HexCell[,] grid;
 
     #region Private
@@ -54,7 +55,7 @@ public class HexGrid
 
 
     //Конструктор сетки высоты height и ширной width
-    public HexGrid(int height, int width)
+    public void Initiate(int height, int width)
     {
         this.width = width;
         this.height = height;
@@ -90,27 +91,27 @@ public class HexGrid
                         \___/ 3 \___/
                             \___/     */
 
-    public HexCell Neighbour(HexCell cell, int neighbourNum)
+    public HexCell Neighbor(HexCell cell, int neighbourNum)
     {
-        OffsetCoordinate neighbourOffset = cell.cube.Neighbour(neighbourNum).ToOffset();
+        OffsetCoordinate neighbourOffset = cell.cube.Neighbor(neighbourNum).ToOffset();
         if (neighbourOffset.row >= 0 && neighbourOffset.row < height &&
             neighbourOffset.column >= 0 && neighbourOffset.column < width)
             return GetCell(neighbourOffset);
         else return null;
     }
 
-    public HexCell Neighbour(int row, int column, int neighbourNum)
+    public HexCell Neighbor(int row, int column, int neighbourNum)
     {
-        return Neighbour(grid[row, column], neighbourNum);
+        return Neighbor(grid[row, column], neighbourNum);
     }
 
     //Возвращает список всех соседей ячейки cell
-    public List<HexCell> AllNeighbours (HexCell cell)
+    public List<HexCell> AllNeighbors (HexCell cell)
     {
         List<HexCell> result = new List<HexCell> ();
         for (int i = 0; i < 6; i++)
-            if (Neighbour(cell, i) != null)
-                result.Add(Neighbour(cell, i));
+            if (Neighbor(cell, i) != null)
+                result.Add(Neighbor(cell, i));
         return result;
     }
 
@@ -149,7 +150,7 @@ public class HexGrid
             {
                 if (GetCell(cube.ToOffset()) != null)
                     result.Add(GetCell(cube.ToOffset()));
-                cube = cube.Neighbour(i);
+                cube = cube.Neighbor(i);
             }
         }
         return result;
@@ -187,4 +188,10 @@ public class HexGrid
         }
 
     }*/
+
+    private void Start()
+    {
+        Vector2Int size = GetComponent<GridGenerator>().gridSize;
+        Initiate(size.x, size.y);
+    }
 }

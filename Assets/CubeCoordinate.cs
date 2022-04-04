@@ -35,7 +35,7 @@ public class CubeCoordinate
         return result;
     }
 
-    /*Возвращает координату смещения соседней ячеки с номером neibourNum
+    /*Возвращает кубическую координату соседней ячеки с номером neibourNum
      *Соседи нумеруются с верхней ячейки по часовой стрелке
                          ___     
                      ___/ 0 \___
@@ -44,7 +44,7 @@ public class CubeCoordinate
                     / 4 \___/ 2 \
                     \___/ 3 \___/
                         \___/     */
-    public CubeCoordinate Neighbour(int neighbourNum)
+    public CubeCoordinate Neighbor(int neighbourNum)
     {
         CubeCoordinate result = new CubeCoordinate();
         neighbourNum = neighbourNum % 6;

@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 public class HexCell
 {
     public CubeCoordinate cube;
     public OffsetCoordinate offset;
-    public char value;
+    public Color color;
     public bool isBlocked;
 
     //Конструктор ячейки с координатой смещения (row,column)
     public HexCell(int row, int column)
     {
-        value = '.';
+        color = Color.white;
         offset = new OffsetCoordinate();
         offset.row = row;
         offset.column = column;
