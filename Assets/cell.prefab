@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9154569631594905395}
   - component: {fileID: 6407127601220316712}
   - component: {fileID: 6764754832362892227}
-  - component: {fileID: 5795843148398877196}
+  - component: {fileID: 2235724024303058025}
   m_Layer: 0
   m_Name: cell
   m_TagString: Untagged
@@ -111,13 +111,13 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.25, y: 0.43359375}
-      - {x: -0.5, y: 0}
-      - {x: -0.25, y: -0.43359375}
-      - {x: 0.25, y: -0.43359375}
-      - {x: 0.5, y: 0}
-      - {x: 0.25, y: 0.43359375}
---- !u!114 &5795843148398877196
+    - - {x: -0.29770067, y: 0.50116974}
+      - {x: -0.6013641, y: 0.0019875318}
+      - {x: -0.29770076, y: -0.49918225}
+      - {x: 0.29770073, y: -0.49918228}
+      - {x: 0.6013641, y: 0}
+      - {x: 0.3016758, y: 0.5011698}
+--- !u!114 &2235724024303058025
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -126,8 +126,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7408847323198880962}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aaa30e1b32b3fbf4588f36471b24324a, type: 3}
+  m_Script: {fileID: 11500000, guid: 0408c195a8efac141a380ca332def221, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standartColor: {r: 1, g: 1, b: 1, a: 1}
-  hoverColor: {r: 0.16509432, g: 1, b: 0.18078518, a: 1}
+  state: 0
+  activeColor: {r: 0.24056602, g: 1, b: 0.312797, a: 1}
+  inactiveColor: {r: 1, g: 1, b: 1, a: 1}
+  blockedColor: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
+  selectColor: {r: 0.9866247, g: 1, b: 0, a: 1}
+  steps: 4
