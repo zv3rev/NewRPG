@@ -6,7 +6,12 @@ using System;
 
 public enum DrawState
 {
-    Active,Clear,Block,Reachable
+    Active,
+    Clear,
+    Block,
+    Reachable,
+    CharacterMove,
+    Play
 }
 
 public class Grid : MonoBehaviour
@@ -15,6 +20,8 @@ public class Grid : MonoBehaviour
     [SerializeField] private Cell cellPrefab;
     [SerializeField] private float cellOffset;
     private Cell[,] cells;
+
+    public Player player;
 
     public DrawState drawState = DrawState.Active;
 
@@ -50,6 +57,11 @@ public class Grid : MonoBehaviour
     private void Start()
     {
         GenerateGrid();
+        player.grid = this;
+        player.currentPlace = GetCell(new OffsetCoordinate(0, 0));
+        player.MoveToCell();
+        player.DrawVariants();
+        
     }
 
     private void Update()
@@ -72,6 +84,27 @@ public class Grid : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             drawState = DrawState.Reachable;
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            drawState = DrawState.CharacterMove;
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            drawState = DrawState.Play;
+        }
+    }
+
+    public void InactiveCells()
+    {
+        foreach (Cell cell in cells)
+        {
+            if(cell.state == CellState.Active)
+            {
+                cell.SetState(CellState.Inactive);
+            } 
         }
     }
 
