@@ -33,3 +33,4 @@ public class OffsetCoordinate
         return result;
     }
 }
+

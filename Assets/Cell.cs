@@ -3,48 +3,62 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public enum CellState
+/*public enum CellState
 {
     Active, Inactive, Blocked
-}
+}*/
 
 public class Cell : MonoBehaviour
 {
     private Grid grid;
     public CubeCoordinate cube;
     private OffsetCoordinate offset { get; set; }
-    public CellState state;
+    public Cell previous = null;
+    public bool isOcupied = false;
+    [SerializeField] private Information information; 
 
-    [SerializeField] private Color activeColor;
-    [SerializeField] private Color inactiveColor;
+    [SerializeField] private float _shootChance = 1;    
+    public float ShootChance
+    {
+        get => _shootChance;
+        set
+        {
+            if (value < 0)
+            {
+                _shootChance = 0;
+                return;
+            }
+            if (value>1)
+            {
+                _shootChance = 1;
+                return;
+            }
+            _shootChance = value;
+
+        }
+    }
+
+    [SerializeField] private byte _stepCost = 1;
+    public byte StepCost
+    {
+        get => _stepCost;
+        set => _stepCost = value;
+    }
+
+    [SerializeField] private Color reachableColor;
     [SerializeField] private Color blockedColor;
-    [SerializeField] private Color selectColor;
+    [SerializeField] private Color notReachableColor;
 
-    public byte steps = 8;
     private SpriteRenderer spriteRenderer;
 
-    public void SetState(CellState newState)
+    public void SetColor(Color color)
     {
-        
+        spriteRenderer.color = color;
+    }
 
-        switch (newState)
-        {
-            case CellState.Active:
-                state = CellState.Active;
-                spriteRenderer.color = activeColor;
-                break;
-            case CellState.Inactive:
-                state = CellState.Inactive;
-                spriteRenderer.color = inactiveColor;
-                break;
-            case CellState.Blocked:
-                state = CellState.Blocked;
-                spriteRenderer.color = blockedColor;
-                break;            
-            default:
-                break;
-        }
-
+    public void SetBaseColor()
+    {
+        spriteRenderer.color = StepCost > 0 ? new Color(1f - 0.2f * StepCost, 1f - 0.2f * StepCost, 1f - 0.2f * StepCost) : blockedColor;
     }
 
     public void SetOffset(int row, int column)
@@ -56,64 +70,44 @@ public class Cell : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (grid.drawState == DrawState.Block)
-        {
-            state = state == CellState.Blocked ? CellState.Inactive : CellState.Blocked;
-            spriteRenderer.color = state == CellState.Blocked ? blockedColor : inactiveColor;
-            grid.InactiveCells();
-            grid.player.DrawVariants();
-            return;
-        }
-
-        if (grid.drawState == DrawState.Reachable && state != CellState.Blocked)       
-        {  
-            List<Cell>[] cells = grid.Reachable(this,steps);
-            for (int i = 0; i < cells.Length; i++)
-            {               
-                foreach (Cell cell in cells[i])
-                {
-                    cell.SetState(CellState.Active);            
-                }
-            }            
-            return;
-        }
-
-        if (grid.drawState == DrawState.CharacterMove && state != CellState.Blocked)
-        {
-            grid.player.currentPlace = this;
-            grid.player.MoveToCell();
-            return;
-        }
-
-        if (grid.drawState == DrawState.Play && state == CellState.Active)
-        {
-            grid.player.currentPlace = this;
-            grid.player.MoveToCell();
-            grid.InactiveCells();
-            grid.player.DrawVariants();
-            return;
-        }
+        
     }
 
     private void OnMouseEnter()
     {
-        if (state != CellState.Blocked)
-        {
-            spriteRenderer.color = selectColor;
-        }
+        information.offsetCoordinates = $"{offset.row},{offset.column}";
+        information.cost = StepCost;
 
-        if (grid.drawState == DrawState.Clear && state != CellState.Blocked)
+        Player player = grid.GetCurrentPlayer();
+        if (player != null && !isOcupied)
         {
-            state = CellState.Inactive;
-        }
+            List<Cell> path = grid.FindPath(player.currentPlace, this);
+            if (path != null && !isOcupied)
+            {
+                path.Reverse();
+                path.RemoveAt(0);
+                int stepsAmount = player.stepsAmount;
+                foreach (Cell cell in path)
+                {
+                    stepsAmount -= cell.StepCost;
+                    cell.SetColor(stepsAmount >= 0 ? reachableColor : notReachableColor);
+                }
+                information.actionPoints = grid.GetCurrentPlayer().stepsAmount - stepsAmount;
+            }
+            else
+            {
+                information.actionPoints = 0;
+            }
+        }    
+
+        information.UpdateInformation();
     }
 
     private void OnMouseExit()
     {
-        if (state != CellState.Blocked)
-            spriteRenderer.color = state == CellState.Active ? activeColor : inactiveColor;
+        information.ClearInformattion();
+        grid.ClearGrid();
     }
-
 
     private void Awake()
     {
@@ -121,7 +115,9 @@ public class Cell : MonoBehaviour
         offset = new OffsetCoordinate();
         grid = transform.parent.GetComponent<Grid>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        state = CellState.Inactive;
+        information = GameObject.Find("Information").GetComponent<Information>();
+        StepCost = (byte)new System.Random().Next(0, 5);
+        SetBaseColor();
     }
 
     public int Distance(CubeCoordinate cube)
@@ -133,6 +129,7 @@ public class Cell : MonoBehaviour
     {
         return Distance(offset.ToCube());
     }
+
     public int Distance(Cell cell)
     {
         return Distance(cell.cube);

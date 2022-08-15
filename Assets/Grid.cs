@@ -5,13 +5,11 @@ using System;
 
 
 public enum DrawState
-{
-    Active,
-    Clear,
+{   
     Block,
-    Reachable,
     CharacterMove,
-    Play
+    Play,
+    ChangeCost
 }
 
 public class Grid : MonoBehaviour
@@ -21,9 +19,18 @@ public class Grid : MonoBehaviour
     [SerializeField] private float cellOffset;
     private Cell[,] cells;
 
-    public Player player;
+    [SerializeField] private const int playersAmount = 3;
+    [SerializeField] private PlayerGenerator playerGenerator;
+    private Player[] players = new Player[playersAmount];
 
-    public DrawState drawState = DrawState.Active;
+    [SerializeField] private const int enemiesAmount = 3;
+    [SerializeField] private PlayerGenerator enemyGenerator;
+    private Player[] enemies = new Player[enemiesAmount];
+
+    private bool isEnemyTurn = false;
+    private Player currentCharacter = null;
+
+    public DrawState drawState = DrawState.Block;
 
     #region Private
     //Ћинейна€ интерпол€ци€ отрезка point1 - point 2
@@ -52,125 +59,43 @@ public class Grid : MonoBehaviour
 
         return new CubeCoordinate(xRound, yRound, zRound);
     }
-    #endregion
+
+    private Cell ChooseNearestNode(List<Cell> cells, Dictionary<Cell, int> costs, Cell goal)
+    {
+        Cell bestNode = cells[0];
+        int minCost = costs[bestNode] + goal.Distance(bestNode);
+        foreach (Cell cell in cells)
+        {
+            int totalCost = costs[cell] + goal.Distance(cell) * 2;
+            if (totalCost < minCost)
+            {
+                minCost = totalCost;
+                bestNode = cell;
+            }
+        }
+        return bestNode;
+    }
+
+    private List<Cell> BuildPath(Cell goal)
+    {
+        List<Cell> path = new List<Cell>();
+        while (goal != null)
+        {
+            path.Add(goal);
+            goal = goal.previous;
+        }
+        return path;
+    }
+    
 
     private void Start()
     {
         GenerateGrid();
-        player.grid = this;
-        player.currentPlace = GetCell(new OffsetCoordinate(0, 0));
-        player.MoveToCell();
-        player.DrawVariants();
-        
+        players = playerGenerator.GeneratePlayers(this, playersAmount).ToArray();
+        enemies = enemyGenerator.GeneratePlayers(this, enemiesAmount).ToArray();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            drawState = DrawState.Block;
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            drawState = DrawState.Clear;
-        }
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            drawState = DrawState.Active;
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            drawState = DrawState.Reachable;
-        }
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            drawState = DrawState.CharacterMove;
-        }
-
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            drawState = DrawState.Play;
-        }
-    }
-
-    public void InactiveCells()
-    {
-        foreach (Cell cell in cells)
-        {
-            if(cell.state == CellState.Active)
-            {
-                cell.SetState(CellState.Inactive);
-            } 
-        }
-    }
-
-    /*private void Update()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if(Physics.Raycast(ray, out hit))
-        {
-            Debug.Log(hit);
-            Cell cell = hit.transform.gameObject.GetComponent<Cell>();
-            Debug.Log(cell);    
-            if (cell != null)
-            {
-                cell.GetComponent<SpriteRenderer>().color = selectColor;
-            }
-        }
-        
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            foreach (Cell cell in cells)
-            {
-                cell.state = cell.state == CellState.Blocked ? CellState.Blocked : CellState.Inactive;
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            if(Physics.Raycast(ray, out hit))
-            {
-                Cell cell = hit.transform.gameObject.GetComponent<Cell>();
-                if (cell != null)
-                {
-                    cell.state = cell.state == CellState.Blocked ? CellState.Blocked : CellState.Active;
-                }
-            }
-
-
-        }
-
-        if (Input.anyKeyDown)
-        {
-            Refresh();
-        }
-    }*/
-
-    /*private void Refresh()
-    {
-        foreach(Cell cell in cells)
-        {
-            SpriteRenderer sr = cell.GetComponent<SpriteRenderer>();
-            switch (cell.state)
-            {
-                case CellState.Active:
-                    sr.color = activeColor;
-                    break;
-                case CellState.Inactive:
-                    sr.color = inactiveColor;
-                    break;
-                case CellState.Blocked:
-                    sr.color = blockedColor;
-                    break;
-            }
-        }
-    }*/
+    #endregion
 
     private void GenerateGrid()
     {
@@ -191,6 +116,15 @@ public class Grid : MonoBehaviour
                 cells[row, col] = cell;
                 cell.name = $"{row},{col}";
             }
+        }
+    }
+
+    public void InactiveCells()
+    {
+        foreach (Cell cell in cells)
+        {
+            cell.SetColor(new Color(51 * cell.StepCost, 51 * cell.StepCost, 51 * cell.StepCost));
+
         }
     }
 
@@ -355,13 +289,76 @@ public class Grid : MonoBehaviour
             result[i] = new List<Cell>();
             foreach (Cell cell in result[i-1])
             {
+                string[] a = new string[5];
                 foreach (Cell neighborCell in AllNeighbors(cell))
                 {
-                    if (neighborCell.state != CellState.Blocked)
+                    if (neighborCell.StepCost != 0)
                         result[i].Add(neighborCell);
                 }
             }
         }
         return result;
+    }
+
+    public List<Cell> FindPath(Cell start, Cell end)
+    {
+        List<Cell> reachable = new List<Cell>();
+        reachable.Add(start);
+        List<Cell> explored = new List<Cell>();
+        Dictionary<Cell, int> costs = new Dictionary<Cell, int>();
+        costs.Add(start, 0);
+
+        
+        while (reachable.Count != 0)
+        {
+            Cell cell = ChooseNearestNode(reachable, costs, end);
+
+            if (cell == end)
+            {
+                return BuildPath(end);
+            }
+
+            reachable.Remove(cell);
+            explored.Add(cell);
+            List<Cell> cellNeighbors = AllNeighbors(cell);
+            foreach (Cell neighbor in cellNeighbors)
+            {
+                if (neighbor.StepCost!=0 && !reachable.Contains(neighbor) && !explored.Contains(neighbor))
+                {
+                    reachable.Add(neighbor);
+                }
+
+                if (!costs.ContainsKey(neighbor) || costs[cell] + neighbor.StepCost < costs[neighbor])
+                {
+                    neighbor.previous = cell;
+                    costs.Remove(neighbor);
+                    costs.Add(neighbor, costs[cell] + neighbor.StepCost);
+                }
+            }
+        }
+        return null;
+    } 
+
+    public Player GetCurrentPlayer()
+    {
+        return currentCharacter;
+    }
+
+    public void ClearGrid()
+    {
+        foreach (Cell cell in cells)
+        {
+            cell.SetBaseColor() ;
+        }
+    }
+
+    public void SetCurrentPlayer(Player character)
+    {
+        if (currentCharacter != null)
+        {
+            currentCharacter.Unselect();
+        }        
+        currentCharacter = character;
+        currentCharacter.Select();
     }
 }

@@ -7,6 +7,9 @@ public class Player : MonoBehaviour
     public Cell currentPlace;
     public Grid grid;
 
+    [SerializeField] private Color baseColor;
+    [SerializeField] private Color selectColor;
+
     public int stepsAmount = 5;
 
     public void MoveToCell()
@@ -15,18 +18,22 @@ public class Player : MonoBehaviour
         Vector2 destination = currentPlace.GetComponent<Transform>().position;
         transform.position = destination;
     }
-    public void DrawVariants()
+
+    public void Select()
     {
-        if (currentPlace != null)
+        GetComponent<SpriteRenderer>().color = selectColor;
+    }
+
+    public void Unselect()
+    {
+        GetComponent<SpriteRenderer>().color = baseColor;
+    }
+
+    private void OnMouseDown()
+    {
+        if(stepsAmount>0)
         {
-            List<Cell>[] cells = grid.Reachable(currentPlace, stepsAmount);
-            for (int i = 0; i < cells.Length; i++)
-            {
-                foreach (Cell cell in cells[i])
-                {
-                    cell.SetState(CellState.Active);
-                }
-            }
+            grid.SetCurrentPlayer(this);
         }
     }
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4948499708780800168}
   - component: {fileID: 6560694793644408227}
   - component: {fileID: -6121072121765558501}
+  - component: {fileID: 5481981310123440125}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -99,4 +100,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentPlace: {fileID: 0}
   grid: {fileID: 0}
+  baseColor: {r: 0, g: 0.10196079, b: 1, a: 1}
+  selectColor: {r: 0, g: 0.49719, b: 1, a: 1}
   stepsAmount: 5
+--- !u!58 &5481981310123440125
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6343972698067769314}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.55
